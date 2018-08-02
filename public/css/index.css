@@ -1,0 +1,190 @@
+@font-face {
+    font-family: mislisa;
+    src: url('../fonts/mislisa-font.ttf');
+}
+body{
+    background-color: #024053;
+    background-image:url("../img/texture.png");
+    /*background-size: 100%; -> podesavanje velicine teksture */
+    font-family:monospace; 
+    margin: 0;
+    padding: 0;
+}
+#login{
+    max-width: 100%;
+    text-align: center;
+    background-color:#024053;
+    margin:0% auto;
+    width: 500px;
+    border-radius: 15px;
+}
+
+.login{
+    width: 200px;
+    height: 40px;
+    font-size: 25px;
+    border:3px solid #ccc;
+    border-radius: 10px;
+    margin:20px 10px 2px;
+    padding: 0;
+    text-align: center;
+}
+#log_btn{
+    margin: 10px auto;
+    width: 150px;
+    height: 40px;
+    border-radius: 10px;
+}
+#mislisa-heading{
+    color:white;
+    font-family: mislisa;
+    font-size:70px;
+    margin: 0px;
+    padding: 0px;
+}
+#brain{
+    width: 180px;
+    height: 132px;
+    margin:0px;
+    padding:7px 10px;
+}
+#brain:hover{
+    width: 200px;
+    height: 146px;
+    padding: 0;
+}
+#center{
+    text-align:center;
+}
+#menu{
+    text-align: center;
+    background-color:#024053;
+    margin: 0 auto;
+    width: 300px;
+    height: auto;
+    border-radius: 30px;
+}
+.button_menu{
+    width: 75%;
+    height: 50px;
+    color:#024053;
+    background-color: white;
+    font-size: 20px;
+    font-family: monospace;
+    border:none;
+    border-radius: 15px;
+    text-decoration: none;
+    margin:5px 0px;
+}
+.button_menu:first-child{
+    margin-top: 20px;
+}
+.button_menu:last-child{
+    margin-bottom: 20px;
+}
+.button_menu:hover{
+    font-size:22px;
+}
+
+h1.title{
+    font-size: 50px;
+    font-weight: normal;
+    margin: 20px auto;
+    text-align: center;
+    color: white;
+}
+form.registration{
+    width: 500px;
+    margin: 20px auto;
+    padding:30px 30px;
+}
+input.registration,button.registration{
+    display: block;
+    padding: 8px 16px;
+    text-align: center;
+    font-size: 2em;
+    margin: 10px auto;
+    width: 300px;
+    height: 55px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    border: 3px solid #ccc;
+    outline: none !important;
+}
+
+input.valid{
+    border-color:#36cc36;
+}
+
+input.invalid{
+    border-color: orange;
+}
+
+input.registration+p{
+    font-family: arial;
+    font-size:0.9em;
+    font-weight: bold;
+    text-align: center;
+    margin:0 10px;
+    color:orange;
+    opacity:0;
+    height:0;
+}
+
+input.invalid+p{
+    opacity: 1;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 50px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #024053;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid white;
+    width: 40%;
+    border-radius: 30px;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#description{
+    text-align: center;
+    color:white;
+    font-size: 15px;
+}
+#fon_logo{
+    display: block;
+    width:300px;
+    margin: auto;
+}

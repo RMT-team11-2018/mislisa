@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Misliša</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+</head>
+<body>
+    <form id="login">
+        <input class="login" type="text" placeholder="nadimak">
+        <input class="login" type="password" placeholder="šifra"><br>
+        <button id="log_btn" type="submit" class="button_menu">Prijavi se</button>
+    </form>
+    <div id="center">
+        <h1 id="mislisa-heading">Misliša</h1>
+        <div>
+            <img id="brain" src="img/brain.gif">
+
+            <div id="menu">
+                <button id="game_btn" class="button_menu">Igraj</button><br>
+                <button id="reg_btn" class="button_menu">Registracija</button><br>
+                <button class="button_menu">Uputstvo</button><br>
+                <button id="des_btn" class="button_menu">O projektu</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="registration_window" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h1 class="title">Registracija</h1>
+              <form class="registration" autocomplete="off" method="post" action="/registration">
+                  <input type="text" name="username" placeholder="korisnicko ime" class="registration input">
+                  <p>Korisničko ime mora imati 5 - 12 karaktera</p>
+
+                  <input type="text" name="email" placeholder="email" class="registration input">
+                  <p>Email adresa mora biti valida, e.g. me@mydomain.com</p>
+
+                  <input type="password" name="password" placeholder="šifra" class="registration input">
+                  <p>Šifra mora imati 8 - 20 karaktera(samo alfanumerički znaci,@,_ i -)</p>
+
+                  <input type="text" name="telephone" placeholder="telefon" class="registration input">
+                  <p>Telefon mora imati 10 cifara</p>
+
+                  <input type="text" name="slug" placeholder="slug profila" class="registration input">
+                  <p>Slug može imati samo mala slova,brojeve i - i mora imati 8 - 20 karaktera</p>
+
+                  <button  type="submit" id="regBtn" class="registration" disabled>REGISTRUJ ME</button>
+              </form>
+        </div>
+      </div>
+
+      <div id="description_window" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h1 class="title">O projektu</h1>
+          <p id="description">Ovde treba napisati nesto o projektu!<img id="fon_logo" src="img/fon.png"></p>
+
+        </div>
+      </div>
+
+      <script type="text/javascript" src="js/index.js"></script>
+      <script type="text/javascript" src="js/validation.js"></script>
+
+</body>
+
+</html>
