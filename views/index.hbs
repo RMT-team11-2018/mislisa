@@ -6,7 +6,9 @@
     <link rel="stylesheet" type="text/css" href="/css/index.css">
 </head>
 <body>
-    <form id="login" autocomplete="off" method="post" action="/login"> 
+    <form id="login" autocomplete="off" method="post" action="/login">
+        <br>
+        <p id="login-info">{{loginMessage}}</p>
         <input class="login" name ="nickname" type="text" placeholder="nadimak">
         <input class="login" name="password" type="password" placeholder="šifra"><br>
         <button id="log_btn" type="submit" class="button_menu">Prijavi se</button>

@@ -1,13 +1,17 @@
 const pool = require('./pool');
 const sqlstring = require('sqlstring');
 
-var createUser = (user)=>{
+var createUser = (user,callback)=>{
     pool.getConnection((err,connection)=>{
         if(err) throw err;
         connection.query(sqlstring.format('INSERT INTO igraci SET ?',user),(error,result,fields)=>{
-            console.log(result);
             connection.release();
-            if(error) throw error;
+            if(error){
+                callback(undefined,error);
+            }else{
+                callback(user);
+            }
+
         });
     });
 };
@@ -20,7 +24,15 @@ var findUserByNicknameAndPassword = (nickname,password,callback)=>{
             connection.release();
             if(error) throw error;
             else if(result){
-                callback(result[0]);
+                var obj = {};
+                for(var key in result[0]){
+                    obj[key] = result[0][key];
+                }
+                if(Object.keys(obj).length>0){
+                    callback(obj);
+                }else{
+                    callback(undefined);
+                }
             }
         });
     });

@@ -19,6 +19,12 @@ body{
     border-radius: 15px;
 }
 
+#login-info{
+    margin:0px;
+    color: white;
+    font-size: 20px;
+}
+
 .login{
     width: 200px;
     height: 40px;
