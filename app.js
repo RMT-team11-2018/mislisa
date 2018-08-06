@@ -11,7 +11,7 @@ var port = process.env.PORT || 3000;
 //setovanje aplikacije
 var app = express();
 app.set('view engine','hbs');
-app.set('trust proxy', 1) 
+app.enable('trust proxy');
 app.use(express.static(publicPath));
 app.use(bodyParser());
 app.use(cookieParser());
@@ -22,6 +22,7 @@ app.use(session({
     proxy:true,
     saveUninitialized: false,
     cookie: {
+        secure:true,
         expires: 1000
     }
 }));
@@ -48,8 +49,6 @@ app.get('/game',sessionChecker,(req,res)=>{
         loginMessage:'Morate biti ulogovani'
     });
 });
-
-
 
 app.get('/:trash',(req,res)=>{
     res.redirect('/');
