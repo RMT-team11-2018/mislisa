@@ -1,17 +1,20 @@
+const http = require('http');
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const socketIO = require('socket.io');
 const user = require('./models/user');
-
+const {shuffle} = require('./controller/mislisina_memorija');
 var publicPath = path.join(__dirname,'public');
 var port = process.env.PORT || 3000;
 
 //setovanje aplikacije
 var app = express();
+var server = http.createServer(app);
 app.set('view engine','hbs');
-app.enable('trust proxy');
+
 app.use(express.static(publicPath));
 app.use(bodyParser());
 app.use(cookieParser());
@@ -19,13 +22,13 @@ app.use(session({
     key: 'user_sid',
     secret: 'mislisa',
     resave: false,
-    proxy:true,
     saveUninitialized: false,
     cookie: {
-        secure:true,
         expires: 1000
     }
 }));
+
+
 app.use((req, res, next) => {
     if (req.cookies.user_sid && !req.session.user) {
         res.clearCookie('user_sid');        
@@ -43,11 +46,15 @@ var sessionChecker = (req, res, next) => {
 app.get('/', sessionChecker, (req, res) => {
     res.render('index.hbs');
 });
+//Zakomentatisano za vreme testiranja
+// app.get('/game',sessionChecker,(req,res)=>{
+//     res.render('index.hbs',{
+//         loginMessage:'Morate biti ulogovani'
+//     });
+// });
 
-app.get('/game',sessionChecker,(req,res)=>{
-    res.render('index.hbs',{
-        loginMessage:'Morate biti ulogovani'
-    });
+app.get('/game',(req,res)=>{
+    res.render('game.hbs');
 });
 
 app.get('/:trash',(req,res)=>{
@@ -85,8 +92,42 @@ app.post('/registration',(req,res)=>{
         }
     });
 });
+var io = socketIO(server);
+var numberOfPlayers = 0;
+var waitSocket;
+var gameIO = io.of('/game');
+gameIO.on('connection',(socket)=>{
+    numberOfPlayers++;
+    if(numberOfPlayers%2==1){
+        waitSocket = socket;
+    }else{
+        var roomName = `${numberOfPlayers/2}`;
+        waitSocket.join(roomName);
+        socket.join(roomName);
+        handleGame(waitSocket,socket,roomName);
+    }
+    socket.on('disconnect',()=>{
+        //moras ovo napraviti!!!
+        /*if(socket.id==waitSocket.id){
+            waitSocket=null;
+        }*/
+    });
+});
 
-app.listen(port,()=>{
+var handleGame = (fSocket,sSocket,roomName)=>{
+    var numbers = shuffle(4);
+    gameIO.to(roomName).emit('shuffledNumbers',numbers);
+    fSocket.emit('firstMove',1);
+    sSocket.emit('firstMove',0);
+    fSocket.on('sendFieldID',(id)=>{
+        fSocket.broadcast.to(roomName).emit('fieldID',id);
+    });
+    sSocket.on('sendFieldID',(id)=>{
+        sSocket.broadcast.to(roomName).emit('fieldID',id);
+    });
+};
+
+server.listen(port,()=>{
     console.log('Server je pokrenut');
 });
 

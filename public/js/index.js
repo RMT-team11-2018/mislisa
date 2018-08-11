@@ -10,6 +10,10 @@ var des_btn = document.getElementById("des_btn");
 var reg_span = document.getElementsByClassName("close")[0];
 var des_span = document.getElementsByClassName("close")[1];
 
+document.getElementById("game_btn").onclick = function () {
+    location.href = "/game";
+};
+
 reg_btn.onclick = function() {
     reg.style.display = "block";
 }
