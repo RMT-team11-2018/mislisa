@@ -1,10 +1,14 @@
-socket.on('shuffledNumbers',function(shuffledNumbers){
+socket.on('shuffledNumbersMM',function(shuffledNumbers){
     numbers = numbers.concat(shuffledNumbers);
-    socket.on('firstMove',function(i){
+    socket.on('firstMoveMM',function(i){
         if(i==0){
             numberOfMoves = 2;
         }
     });
-    console.log(numbers);
-    startGame();
+    startMislisinaMemorija();
+});
+
+socket.on('expressionsMP',function(exps){
+    expressions = expressions.concat(exps);
+    startMudraPcela();
 });

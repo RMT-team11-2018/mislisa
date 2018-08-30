@@ -7,6 +7,7 @@ const session = require('express-session');
 const socketIO = require('socket.io');
 const user = require('./models/user');
 const {shuffle} = require('./controller/mislisina_memorija');
+const {getExpressions} = require('./controller/mudra_pcela');
 var publicPath = path.join(__dirname,'public');
 var port = process.env.PORT || 3000;
 
@@ -115,15 +116,45 @@ gameIO.on('connection',(socket)=>{
 });
 
 var handleGame = (fSocket,sSocket,roomName)=>{
+    //Mislisina memorija
+
+    //OVO ODKOMENTARISI POSLE GOTOVOG TESTIRNJA!!!
+    handleMislisinaMemorija(fSocket,sSocket,roomName,handleMudraPcela);
+    //A OVO OBRISI
+    //handleMudraPcela(fSocket,sSocket,roomName);
+    //Mudra pcela
+};
+
+var handleMislisinaMemorija = (fSocket,sSocket,roomName,nextGame)=>{
     var numbers = shuffle(4);
-    gameIO.to(roomName).emit('shuffledNumbers',numbers);
-    fSocket.emit('firstMove',1);
-    sSocket.emit('firstMove',0);
-    fSocket.on('sendFieldID',(id)=>{
-        fSocket.broadcast.to(roomName).emit('fieldID',id);
+    gameIO.to(roomName).emit('shuffledNumbersMM',numbers);
+    fSocket.emit('firstMoveMM',1);
+    sSocket.emit('firstMoveMM',0);
+    fSocket.on('sendFieldIDMM',(id)=>{
+        fSocket.broadcast.to(roomName).emit('fieldIDMM',id);
     });
-    sSocket.on('sendFieldID',(id)=>{
-        sSocket.broadcast.to(roomName).emit('fieldID',id);
+    sSocket.on('sendFieldIDMM',(id)=>{
+        sSocket.broadcast.to(roomName).emit('fieldIDMM',id);
+    });
+    fSocket.on('endMM',(result)=>{
+        //cuvanje rezultata
+        nextGame(fSocket,sSocket,roomName);
+    });
+    sSocket.on('endMM',(result)=>{
+        //cuvanje rezultata
+    });
+};
+
+var handleMudraPcela = (fSocket,sSocket,roomName)=>{
+    var expressions = getExpressions(10);
+    gameIO.to(roomName).emit('expressionsMP',expressions);
+    // fSocket.emit('firstMoveMP',1);
+    // sSocket.emit('firstMoveMP',0);
+    fSocket.on('sendPositionMP',(position)=>{
+        fSocket.broadcast.to(roomName).emit('positionMP',position);
+    });
+    sSocket.on('sendPositionMP',(position)=>{
+        sSocket.broadcast.to(roomName).emit('positionMP',position);
     });
 };
 

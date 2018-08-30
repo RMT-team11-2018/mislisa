@@ -6,8 +6,13 @@ body{
     width: 1200px;
     height: 1200px;
 }
+#canvas{
+    border: 1px solid gray;
+    background-color: limegreen;
+    /*background-image: url('grass.jpg');*/
+}
 .row{
-    height: 125px;
+    height: 187.5px;
     margin: 0;
     padding: 0;
 }
@@ -15,9 +20,9 @@ p{
     font-size: 25px;
 }
 #img{
-    width: 75px;
-    height: 75px;
-    margin: 25px;
+    width: 150px;
+    height: 150px;
+    margin: 18px;
 }
 .field{
     vertical-align: top;
@@ -26,8 +31,8 @@ p{
     border-color: orange;
     border-width: 0.1px;
     display: inline-block;
-    width: 125px;
-    height: 125px;
+    width: 250px;
+    height: 187.5px;
     text-align: center;
     font-size: 90px;
     padding: 0;

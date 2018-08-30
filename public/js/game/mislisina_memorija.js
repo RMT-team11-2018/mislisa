@@ -10,9 +10,10 @@ var firstMove = '';
 var secondMove = '';
 var numMoves = 0;
 var numFined = 0;
+//global
 var game = document.getElementById('game');
 
-socket.on('fieldID',function(id){
+socket.on('fieldIDMM',function(id){
     oppNumberOfMoves++;
     if(oppNumberOfMoves==2){
         numberOfMoves = 0;
@@ -28,7 +29,7 @@ function Field(id,img,fined,opened){
     this.fined = fined;
 }
 
-function startGame(){
+function startMislisinaMemorija(){
     var i,j;
     var counter = 0;
     var content = '';
@@ -70,7 +71,7 @@ function handleMove(id){
         return;
     if(numberOfMoves<2){
         numberOfMoves++;
-        socket.emit('sendFieldID',id);
+        socket.emit('sendFieldIDMM',id);
         move(id,tmp);
     }
 }
@@ -119,7 +120,8 @@ function refesh(){
 
 function theEnd(){
     if(numFined==n*n){
-        alert('Bravo!'+'\nKraj ige u '+numMoves+' poteza!');
+        //Ovde trebam da posaljem rezultat
+        socket.emit('endMM',null);
         game.innerHTML = "";
     }
 }
