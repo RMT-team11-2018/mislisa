@@ -87,7 +87,6 @@ function startMudraPcela(){
     socket.on('positionMP',function(position){
         xp = position.x;
         yp = position.y;
-        console.log(position.x);
     });
 
     canvas.addEventListener('click',function(event){

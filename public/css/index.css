@@ -91,6 +91,9 @@ body{
 .button_menu:hover{
     font-size:22px;
 }
+#logout_btn{
+    margin-bottom: 20px;
+}
 
 h1.title{
     font-size: 50px;

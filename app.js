@@ -8,6 +8,7 @@ const socketIO = require('socket.io');
 const user = require('./models/user');
 const {shuffle} = require('./controller/mislisina_memorija');
 const {getExpressions} = require('./controller/mudra_pcela');
+
 var publicPath = path.join(__dirname,'public');
 var port = process.env.PORT || 3000;
 
@@ -25,7 +26,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        expires: 1000
+        expires: 30000
     }
 }));
 
@@ -36,9 +37,12 @@ app.use((req, res, next) => {
     }
     next();
 });
+
 var sessionChecker = (req, res, next) => {
     if (req.session.user && req.cookies.user_sid) {
-        res.render('game.hbs');
+        res.render('index.hbs',{
+            login:true
+        });
     } else {
         next();
     }    
@@ -55,7 +59,19 @@ app.get('/', sessionChecker, (req, res) => {
 // });
 
 app.get('/game',(req,res)=>{
-    res.render('game.hbs');
+    res.render('game.hbs',{
+        login:false
+    });
+});
+
+app.get('/profile/:id',(req,res)=>{
+    if(req.params.id=='my')
+        res.render('profile.hbs');
+});
+
+app.get('/logout',(req,res)=>{
+    req.session.destroy();
+    res.redirect('/');
 });
 
 app.get('/:trash',(req,res)=>{
@@ -65,8 +81,10 @@ app.get('/:trash',(req,res)=>{
 app.post('/login',(req,res)=>{
     user.findUserByNicknameAndPassword(req.body.nickname,req.body.password,(user)=>{
         if(user){
-            req.session.user = user;
-            res.redirect('/game');
+            req.session.user = user;;
+            res.render('index.hbs',{
+                login:true
+            });
         }else{
             res.render('index.hbs',{
                 loginMessage:'Pogrešan nadimak ili šifra'

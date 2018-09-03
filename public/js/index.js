@@ -4,15 +4,28 @@ var des = document.getElementById('description_window');
 
 var reg_btn = document.getElementById("reg_btn");
 var des_btn = document.getElementById("des_btn");
-
-
+var game_btn = document.getElementById("game_btn");
+var logout_btn = document.getElementById("logout_btn");
+var profile_btn = document.getElementById('profile_btn');
 //ovde voditi racuna o redosledu u html dokumentu
 var reg_span = document.getElementsByClassName("close")[0];
 var des_span = document.getElementsByClassName("close")[1];
 
-document.getElementById("game_btn").onclick = function () {
-    location.href = "/game";
-};
+if(game_btn){
+    game_btn.onclick = function () {
+        location.href = "/game";
+    };
+}
+if(logout_btn){
+    logout_btn.onclick = function(){
+        location.href = "/logout";
+    };
+}
+if(profile_btn){
+    profile_btn.onclick = function(){
+        location.href = "/profile/my"
+    };
+}
 
 reg_btn.onclick = function() {
     reg.style.display = "block";

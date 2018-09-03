@@ -1,0 +1,20 @@
+body{
+    background-color: #024053;
+    background-image:url("../img/texture.png");
+    /*background-size: 100%; -> podesavanje velicine teksture */
+    font-family:monospace; 
+    margin: 0;
+    padding: 0;
+}
+#medals{
+    background-color: #D8D8D8;
+    /* box-shadow: 27px 22px 56px -13px rgba(0,0,0,0.48); */
+    border-radius: 30px;
+    margin-top: 20px;
+}
+#profile_img{
+
+}
+#medal:hover{
+    transform: rotate(5deg);
+}
