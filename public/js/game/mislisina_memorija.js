@@ -5,6 +5,8 @@ var fields = new Array(n);
 var fieldsObj = new Array(n);
 var numbers = [];
 var numberOfMoves = 0;
+//Broj polja koje je igrac otkrio
+var result = 0;
 var oppNumberOfMoves = 0;
 var firstMove = '';
 var secondMove = '';
@@ -19,7 +21,7 @@ socket.on('fieldIDMM',function(id){
         numberOfMoves = 0;
         oppNumberOfMoves = 0;
     }
-    move(id,returnField(id));
+    move(id,returnField(id),false);
 });
 
 function Field(id,img,fined,opened){
@@ -72,11 +74,11 @@ function handleMove(id){
     if(numberOfMoves<2){
         numberOfMoves++;
         socket.emit('sendFieldIDMM',id);
-        move(id,tmp);
+        move(id,tmp,true);
     }
 }
 
-function move(id,tmp){
+function move(id,tmp,myMove){
     if(numMoves%2==0){
         firstMove = id;
         refesh();
@@ -93,6 +95,8 @@ function move(id,tmp){
             firstField.fined = true;
             secondField.fined = true;
             numFined+=2;
+            if(myMove)
+                result++;//Povecavanje rezultata za 1
         }
     }
     theEnd();
@@ -120,8 +124,8 @@ function refesh(){
 
 function theEnd(){
     if(numFined==n*n){
-        //Ovde trebam da posaljem rezultat
-        socket.emit('endMM',null);
+        //slanje rezultata
+        socket.emit('endMM',{result,numMoves});
         game.innerHTML = "";
     }
 }

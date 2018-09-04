@@ -26,7 +26,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        expires: 30000
+        expires: 3000000
     }
 }));
 
@@ -39,9 +39,9 @@ app.use((req, res, next) => {
 });
 
 var sessionChecker = (req, res, next) => {
-    if (req.session.user && req.cookies.user_sid) {
+    if (!req.session.user || !req.cookies.user_sid) {
         res.render('index.hbs',{
-            login:true
+            login:false
         });
     } else {
         next();
@@ -64,9 +64,37 @@ app.get('/game',(req,res)=>{
     });
 });
 
+
+app.post('/profile',(req,res)=>{
+    if (req.session.user && req.cookies.user_sid) {
+        var nadimak = req.body.nickname;
+        user.findUserByNickname(nadimak,(user)=>{
+            if(!user){
+                res.render('index.hbs',{
+                    login:true,
+                    searchMessage:`Ne postoji igrač sa nadimkom ${nadimak}`
+                });
+            }
+            else{
+                res.render('profile.hbs',{
+                    name:user.nadimak
+                });
+            }
+        })
+    } 
+});
+
 app.get('/profile/:id',(req,res)=>{
-    if(req.params.id=='my')
-        res.render('profile.hbs');
+    //Kako ovo odraditi preko sessionChechera? Ne prikazuje mi brain.gif
+    if (req.session.user && req.cookies.user_sid) {
+        if(req.params.id=='my'){
+            res.render('profile.hbs',{
+                name:req.session.user.nadimak
+            });
+        }
+    } else {
+       res.redirect('/');
+    }    
 });
 
 app.get('/logout',(req,res)=>{
@@ -76,21 +104,6 @@ app.get('/logout',(req,res)=>{
 
 app.get('/:trash',(req,res)=>{
     res.redirect('/');
-});
-
-app.post('/login',(req,res)=>{
-    user.findUserByNicknameAndPassword(req.body.nickname,req.body.password,(user)=>{
-        if(user){
-            req.session.user = user;;
-            res.render('index.hbs',{
-                login:true
-            });
-        }else{
-            res.render('index.hbs',{
-                loginMessage:'Pogrešan nadimak ili šifra'
-            });
-        }
-    });
 });
 
 app.post('/registration',(req,res)=>{
@@ -111,6 +124,22 @@ app.post('/registration',(req,res)=>{
         }
     });
 });
+
+app.post('/login',(req,res)=>{
+    user.findUserByNicknameAndPassword(req.body.nickname,req.body.password,(user)=>{
+        if(user){
+            req.session.user = user;
+            res.render('index.hbs',{
+                login:true
+            });
+        }else{
+            res.render('index.hbs',{
+                loginMessage:'Pogrešan nadimak ili šifra'
+            });
+        }
+    });
+});
+
 var io = socketIO(server);
 var numberOfPlayers = 0;
 var waitSocket;
@@ -137,10 +166,9 @@ var handleGame = (fSocket,sSocket,roomName)=>{
     //Mislisina memorija
 
     //OVO ODKOMENTARISI POSLE GOTOVOG TESTIRNJA!!!
-    handleMislisinaMemorija(fSocket,sSocket,roomName,handleMudraPcela);
+    //handleMislisinaMemorija(fSocket,sSocket,roomName,handleMudraPcela);
     //A OVO OBRISI
-    //handleMudraPcela(fSocket,sSocket,roomName);
-    //Mudra pcela
+    handleMudraPcela(fSocket,sSocket,roomName);
 };
 
 var handleMislisinaMemorija = (fSocket,sSocket,roomName,nextGame)=>{
@@ -166,13 +194,18 @@ var handleMislisinaMemorija = (fSocket,sSocket,roomName,nextGame)=>{
 var handleMudraPcela = (fSocket,sSocket,roomName)=>{
     var expressions = getExpressions(10);
     gameIO.to(roomName).emit('expressionsMP',expressions);
-    // fSocket.emit('firstMoveMP',1);
-    // sSocket.emit('firstMoveMP',0);
     fSocket.on('sendPositionMP',(position)=>{
         fSocket.broadcast.to(roomName).emit('positionMP',position);
     });
     sSocket.on('sendPositionMP',(position)=>{
         sSocket.broadcast.to(roomName).emit('positionMP',position);
+    });
+    fSocket.on('endMP',(result)=>{
+         //cuvanje rezultata
+        //Jovanove igre posle ovog :)
+    });
+    sSocket.on('endMP',(result)=>{
+         //cuvanje rezultata
     });
 };
 

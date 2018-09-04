@@ -6,20 +6,24 @@
     <link rel="stylesheet" type="text/css" href="/css/index.css">
 </head>
 <body>
-    {{#unless login}}
-    <form id="login" autocomplete="off" method="post" action="/login">
-        <br>
-        <p id="login-info">{{loginMessage}}</p>
-        <input class="login" name ="nickname" type="text" placeholder="nadimak">
-        <input class="login" name="password" type="password" placeholder="šifra"><br>
-        <button id="log_btn" type="submit" class="button_menu">Prijavi se</button>
-    </form>
-    {{/unless}}
+    <div id="heder">
+        {{#if searchMessage}}
+        <p class="info">{{searchMessage}}</p>
+        {{/if}}
+        {{#unless login}}
+        <form id="login" autocomplete="off" method="post" action="/login">
+            <br>
+            <p class="info">{{loginMessage}}</p>
+            <input class="login" name ="nickname" type="text" placeholder="nadimak">
+            <input class="login" name="password" type="password" placeholder="šifra"><br>
+            <button id="log_btn" type="submit" class="button_menu">Prijavi se</button>
+        </form>
+        {{/unless}}
+    </div>
     <div id="center">
         <h1 id="mislisa-heading">Misliša</h1>
+        <img id="brain" src="img/brain.gif">
         <div>
-            <img id="brain" src="img/brain.gif">
-
             <div id="menu">
                 {{#if login}}
                 <button id="game_btn" class="button_menu">Igraj</button><br>
@@ -63,6 +67,19 @@
           <span class="close">&times;</span>
           <h1 class="title">O projektu</h1>
           <p id="description">Ovde treba napisati nesto o projektu!<img id="fon_logo" src="img/fon.png"></p>
+
+        </div>
+      </div>
+
+      <div id="search_window" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h1 class="title">Pretraga igrača</h1>
+          
+            <form id="search" autocomplete="off" method="post" action="/profile">
+                <input type="text" name="nickname" placeholder="nadimak" class="search">
+                <button  type="submit" id="regBtn" class="search">PRETRAŽI</button>
+            </form>
 
         </div>
       </div>

@@ -10,16 +10,17 @@ body{
     margin: 0;
     padding: 0;
 }
-#login{
-    max-width: 100%;
+#heder{
     text-align: center;
     background-color:#024053;
+    max-width: 100%;
     margin:0% auto;
     width: 500px;
+    /* height: 155px;-> ako hoces da ti headeing bude vidiljiv */ 
     border-radius: 15px;
 }
 
-#login-info{
+.info{
     margin:0px;
     color: white;
     font-size: 20px;
@@ -107,7 +108,7 @@ form.registration{
     margin: 20px auto;
     padding:30px 30px;
 }
-input.registration,button.registration{
+input.registration,button.registration,input.search,button.search{
     display: block;
     padding: 8px 16px;
     text-align: center;

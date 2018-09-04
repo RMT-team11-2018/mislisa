@@ -124,6 +124,7 @@ function startMudraPcela(){
 function draw_anim() { 
     ctx.clearRect(0,60,1000,700);
     if(numOfFlwRow==10){
+        socket.emit('endMP',{trueAnswers,falseAnswers,time});
         draw_end_score();
         clearInterval(interval);
     }else{
@@ -143,11 +144,13 @@ function change_expression(exp){
     flowers[++numOfFlwRow] = new Array(4);
 
     for(var i=0;i<4;i++){
+        //random rezultati pored pravog
         var randNum = i==tp?exp.result:exp.result-Math.floor(Math.random()*10)+5;
         if(i==0)
             flowers[numOfFlwRow][i] = new flw_obj(position,135,randNum);
-        else
-            flowers[numOfFlwRow][i] = new flw_obj(position,135+(Math.random()*100),randNum);
+        else{
+            flowers[numOfFlwRow][i] = new flw_obj(position,135+(i%2==0?0:20),randNum);
+        }
         position+=200;
     }
     bee_obj.wait = false;
