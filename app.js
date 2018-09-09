@@ -155,10 +155,10 @@ gameIO.on('connection',(socket)=>{
         handleGame(waitSocket,socket,roomName);
     }
     socket.on('disconnect',()=>{
-        //moras ovo napraviti!!!
-        /*if(socket.id==waitSocket.id){
+        if(waitSocket!=null && socket.id==waitSocket.id){
+            numberOfPlayers--;
             waitSocket=null;
-        }*/
+        }
     });
 });
 
@@ -166,9 +166,9 @@ var handleGame = (fSocket,sSocket,roomName)=>{
     //Mislisina memorija
 
     //OVO ODKOMENTARISI POSLE GOTOVOG TESTIRNJA!!!
-    //handleMislisinaMemorija(fSocket,sSocket,roomName,handleMudraPcela);
+    handleMislisinaMemorija(fSocket,sSocket,roomName,handleMudraPcela);
     //A OVO OBRISI
-    handleMudraPcela(fSocket,sSocket,roomName);
+    //handleMudraPcela(fSocket,sSocket,roomName);
 };
 
 var handleMislisinaMemorija = (fSocket,sSocket,roomName,nextGame)=>{
@@ -207,6 +207,31 @@ var handleMudraPcela = (fSocket,sSocket,roomName)=>{
     sSocket.on('endMP',(result)=>{
          //cuvanje rezultata
     });
+};
+
+//Evo ga tvoj deo
+var handleUdaraPandu = (fSocket,sSocket,roomName)=>{
+    var numOfStep = 20;
+    //var positions = getPositions(numOfStep;,3,3);
+    var stepCounter = 0;
+    fSocket.on('positionUP',(position)=>{
+        // position = {
+        //     x,
+        //     y,
+        //     step
+        // }
+    });
+    sSocket.on('positionUP',(position)=>{
+        //Ovde obavezno proveri da li ti je stepCounter jednak stepu koji
+        //ti salje klijent. 
+    });
+    var interval = setInterval(()=>{
+        if(stepCounter==numOfStep){
+            clearInterval(interval);
+        }
+        gameIO.to(roomName).emit('positionsUP',position[i]);
+        stepCounter++;
+    },500+Math.random()*1000);
 };
 
 server.listen(port,()=>{
