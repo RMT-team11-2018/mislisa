@@ -69,7 +69,7 @@ bee.onload = function () {
 bee.src = '../../img/bee.png';
 flw.src = '../../img/flw.png';
 
-
+var interval;
 
 function startMudraPcela(){
     game.innerHTML = '<canvas id="canvas" width="1000" height="700"></canvas>';
@@ -111,7 +111,7 @@ function startMudraPcela(){
 
     change_expression(getExpression());
 
-    var interval = setInterval((function () {
+    interval = setInterval((function () {
         //Slanje pozicije serveru
         socket.emit('sendPositionMP',{x,y});
 
