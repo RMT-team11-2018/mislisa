@@ -7,6 +7,6 @@ var getRandom =(lastHole)=>{
     return hole;
 };
 var getRandomTime = ()=>{
-    return Math.round(Math.random() * (1200 - 500) + 500);
+    return Math.round(Math.random() * (1250 - 430) + 430);
 }
 module.exports={getRandom,getRandomTime};

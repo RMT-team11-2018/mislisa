@@ -1,7 +1,14 @@
 var randomParams = {};
 var countPanda = 0;
-function startUdariPandu() {
-
+var lastPanda;
+var game = document.getElementById('game');
+function startUdariPandu(randomP) {
+    if(countPanda !== 0 && lastPanda<19){
+        $('#panda' + lastPanda).css("background-image", "url(../img/panda.jpg)");
+    }
+    lastPanda = randomP.random;
+    randomParams=randomP;
+    
     if (countPanda === 0) {
         game.innerHTML = "";
         $(document.body).css("background-color", "#024053");
@@ -19,8 +26,8 @@ function startUdariPandu() {
         game.innerHTML = content;
 
     }
-
-    panding();
+    if(countPanda<20)
+        panding();
 }
 
 function panding() {
@@ -39,7 +46,7 @@ function panding() {
     setTimeout(() => {
         pandaUPClick.style.top = 100 + '%';
         countPanda++;
-    }, randomParams.randomTime+50);
+    }, randomParams.randomTime);
 }
 
 function ending(scores) {
@@ -52,7 +59,5 @@ function ending(scores) {
 function changesUP() {
     // console.log('Doslo je do changes i ovo je random', randomParams.random);
     $('#panda' + randomParams.random).css("background-image", "url(../img/panda22.jpg)");
-    setTimeout(() => {
-        $('#panda' + randomParams.random).css("background-image", "url(../img/panda.jpg)");
-    }, 105);
+   
 }

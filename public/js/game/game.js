@@ -15,12 +15,12 @@ socket.on('expressionsMP', function (exps) {
 
 //Udari pandu
 socket.on('randomUP', function (randomP) {
-    randomParams = randomP;
-    startUdariPandu();
+    
+    startUdariPandu(randomP);
 });
 
 socket.on('endUP', (scores) => {
-    ending(scores);
+    document.getElementById('game').innerHTML = "";
 });
 
 //Vagalica

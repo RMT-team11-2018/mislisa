@@ -172,7 +172,7 @@ var handleGame = (fSocket, sSocket, roomName) => {
     handleMislisinaMemorija(fSocket,sSocket,roomName,handleMudraPcela);
     //A OVO OBRISI
     //handleMudraPcela(fSocket,sSocket,roomName);
-    //handleUdaraPandu(fSocket,sSocket,roomName);
+    //handleUdaraPandu(fSocket, sSocket, roomName);
     //handleVagalica(fSocket, sSocket, roomName);
     //handleMudraPcela(fSocket,sSocket,handleMudraPcela);
 };
@@ -219,34 +219,35 @@ var handleMudraPcela = (fSocket, sSocket, roomName, nextGame) => {
 
 //Evo ga tvoj deo
 var handleUdaraPandu = (fSocket, sSocket, roomName, nextGame) => {
-    var createdAtF = 0;
-    var createdAtS = 0;
-    var clickedF = false;
-    var clickedS = false;
-    var scoreF = 0;
-    var scoreS = 0;
     var lastHole = 0;
-    var numOfStep = 20;
+    var numOfStep = 19;
     var random = getRandom(lastHole);
     var randomTime = getRandomTime();
     var stepCounter = 0;
+
+    var resultsF = new Array(20);
+    var resultsS = new Array(20);
+    var rezultatIgre = {};
+
+
     fSocket.on('pandaUP', (stepClient) => {
-        if (stepCounter === stepClient) {
-            createdAtF = new Date().getTime();
-            clickedF = true;
-        }
+        resultsF[stepClient] = new Date().getTime();
+
+
     });
     sSocket.on('pandaUP', (stepClient) => {
-        if (stepCounter === stepClient) {
-            createdAtS = new Date().getTime();
-            clickedS = true;
-        }
+        resultsS[stepClient] = new Date().getTime();
+
+
     });
     var intervalUP = setInterval(() => {
         if (stepCounter === numOfStep) {
-            gameIO.to(roomName).emit('endUP', { scoreF, scoreS });
-            clearInterval(intervalUP);
-            //nextGame(fSocket, sSocket, roomName);
+            setTimeout(() => {
+                rezultatIgre = izracunajRezultat(resultsF, resultsS);
+                console.log(`Rezultat igraca1:${rezultatIgre.rezF}---Rezultat igraca2:${rezultatIgre.rezS}`);
+                gameIO.to(roomName).emit('endUP');
+                clearInterval(intervalUP);
+            }, 2200);
         }
         random = getRandom(lastHole);
         randomTime = getRandomTime();
@@ -254,32 +255,35 @@ var handleUdaraPandu = (fSocket, sSocket, roomName, nextGame) => {
         gameIO.to(roomName).emit('randomUP', { random, randomTime });
         stepCounter++;
 
-        if (clickedF && clickedS) {
-            if (createdAtF < createdAtS) {
-                scoreF++;
-                //fSocket.emit('winRoundUP');
-            }
 
-            else if (createdAtF > createdAtS) {
-                scoreS++
-                //sSocket.emit('winRoundUP');
-            }
-            else {
-                scoreS += 0.5;
-                scoreF += 0.5;
-            }
-
-        } else if (clickedF && !clickedS) {
-            scoreF++;
-            //fSocket.emit('winRoundUP');
-        } else if (clickedS && !clickedF) {
-            scoreS++;
-            //sSocket.emit('winRoundUP');
-        }
-        clickedF = false;
-        clickedS = false;
     }, randomTime + 600);
 };
+//racunanje rezultata iz handleUdaraPandu
+function izracunajRezultat(resF, resS) {
+    rezF = 0;
+    rezS = 0;
+    for (var i = 0; i < 20; i++) {
+
+        if (typeof resF[i] != "undefined" && typeof resS[i] != "undefined") {
+            if (resF[i] < resS[i]) {
+                rezF++;
+            }
+            else if (resF[i] > resS[i]) {
+                rezS++;
+            }
+            else {
+                rezS += 0.5;
+                rezF += 0.5;
+            }
+        } else if (typeof resF[i] != "undefined" && typeof resS[i] == "undefined") {
+            rezF++;
+        } else if (typeof resF[i] == "undefined" && typeof resS[i] != "undefined") {
+            rezS++;
+        }
+    }
+    return { rezF, rezS };
+};
+
 
 var handleVagalica = function (fSocket, sSocket, roomName) {
     var odabranaPolja = new Array(15);
@@ -310,13 +314,13 @@ var handleVagalica = function (fSocket, sSocket, roomName) {
     for (var i = 1; i < 11; i++) {
         if (i % 2 !== 0) {
             console.log('treba da emituje fsoket');
-            fSocket.emit('biranjeBrojeva', {i, odabranaPolja});
+            fSocket.emit('biranjeBrojeva', { i, odabranaPolja });
         } else {
-            sSocket.emit('biranjeBrojeva', {i, odabranaPolja});
+            sSocket.emit('biranjeBrojeva', { i, odabranaPolja });
         }
-        if (izabranoPolje !== 0){
+        if (izabranoPolje !== 0) {
             console.log('sada svima emituje sta je odabrano');
-            gameIO.to(roomName).emit('prikazPolja', {i, odabranaPolja, izabranoPolje});
+            gameIO.to(roomName).emit('prikazPolja', { i, odabranaPolja, izabranoPolje });
         }
     }
 
