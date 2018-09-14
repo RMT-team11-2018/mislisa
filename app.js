@@ -16,7 +16,7 @@ const { getRandomVagalica } = require('./controller/vagalica');
 var publicPath = path.join(__dirname, 'public');
 var port = process.env.PORT || 3000;
 
-//setovanje aplikacije
+//setovanje aplikacij
 var app = express();
 var server = http.createServer(app);
 app.set('view engine', 'hbs');
