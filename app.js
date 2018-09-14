@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const socketIO = require('socket.io');
 const user = require('./models/user');
+const _ = require('lodash');
 const { shuffle } = require('./controller/mislisina_memorija');
 const { getExpressions } = require('./controller/mudra_pcela');
 const { getRandom } = require('./controller/udari_pandu');
@@ -29,7 +30,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        expires: 3000000
+        expires: 300000000
     }
 }));
 
@@ -52,7 +53,15 @@ var sessionChecker = (req, res, next) => {
 };
 
 app.get('/', sessionChecker, (req, res) => {
-    res.render('index.hbs');
+    if (req.session.user && req.cookies.user_sid) {
+        res.render('index.hbs',{
+            login:true
+        });
+    }else{
+        res.render('index.hbs',{
+            login:false
+        });
+    }
 });
 //Zakomentatisano za vreme testiranja
 // app.get('/game',sessionChecker,(req,res)=>{
@@ -62,9 +71,14 @@ app.get('/', sessionChecker, (req, res) => {
 // });
 
 app.get('/game', (req, res) => {
-    res.render('game.hbs', {
-        login: false
-    });
+    if(req.session.user && req.cookies.user_sid) {
+        res.render('game.hbs',{
+            login:true
+        });
+    }
+    else{
+        res.redirect('/');
+    }
 });
 
 
@@ -101,7 +115,9 @@ app.get('/profile/:id', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-    req.session.destroy();
+    if (req.session.user && req.cookies.user_sid){
+        req.session.destroy();
+    }
     res.redirect('/');
 });
 
@@ -166,59 +182,101 @@ gameIO.on('connection', (socket) => {
 });
 
 var handleGame = (fSocket, sSocket, roomName) => {
-    //Mislisina memorija
-
+    var roomInfo = {
+        name:roomName,
+        fNickname : '',
+        sNickname : '',
+        mislisinaMemorija : {
+            fScore : null,
+            sScore : null
+        },
+        mudraPcela : {
+            fScore : null,
+            sScore : null
+        },
+        udariPandu : {
+            fScore : null,
+            sScore : null
+        },
+        vagalica : {
+            fScore : null,
+            sScore : null
+        }
+    };
+    var callHandle = _.after(2,()=>{
+        handleMislisinaMemorija(fSocket,sSocket,roomInfo,handleMudraPcela);
+    });
     //OVO ODKOMENTARISI POSLE GOTOVOG TESTIRNJA!!!
-    handleMislisinaMemorija(fSocket,sSocket,roomName,handleMudraPcela);
     //A OVO OBRISI
     //handleMudraPcela(fSocket,sSocket,roomName);
     //handleUdaraPandu(fSocket,sSocket,roomName);
     //handleVagalica(fSocket, sSocket, roomName);
-    //handleMudraPcela(fSocket,sSocket,handleMudraPcela);
+    //handleMudraPcela(fSocket,sSocket,handleMudraPcela)
+    gameIO.to(roomName).emit('sendNickname');
+    fSocket.once('nickname',(n)=>{
+        roomInfo.fNickname = n.nickname;
+        callHandle();
+    });
+    sSocket.once('nickname',(n)=>{
+        roomInfo.sNickname =n.nickname;
+        callHandle();
+    });
 };
 
-var handleMislisinaMemorija = (fSocket, sSocket, roomName, nextGame) => {
+var handleMislisinaMemorija = (fSocket, sSocket, roomInfo, nextGame) => {
+    var callHandle = _.after(2,()=>{
+        nextGame(fSocket,sSocket,roomInfo,handleUdaraPandu);
+    });
     var numbers = shuffle(4);
-    gameIO.to(roomName).emit('shuffledNumbersMM', numbers);
+    gameIO.to(roomInfo.name).emit('shuffledNumbersMM', numbers);
     fSocket.emit('firstMoveMM', 1);
     sSocket.emit('firstMoveMM', 0);
     fSocket.on('sendFieldIDMM', (id) => {
-        fSocket.broadcast.to(roomName).emit('fieldIDMM', id);
+        fSocket.broadcast.to(roomInfo.name).emit('fieldIDMM', id);
     });
     sSocket.on('sendFieldIDMM', (id) => {
-        sSocket.broadcast.to(roomName).emit('fieldIDMM', id);
+        sSocket.broadcast.to(roomInfo.name).emit('fieldIDMM', id);
     });
     fSocket.on('endMM', (result) => {
-        //cuvanje rezultata
-        nextGame(fSocket, sSocket, roomName, handleUdaraPandu);
-        //nextGame(fSocket,sSocket,roomName);
+        roomInfo.mislisinaMemorija.fScore = result;
+        console.log('Mislisina memorija 1 '+result.result,result.numMoves);
+        callHandle();
     });
     sSocket.on('endMM', (result) => {
-        //cuvanje rezultata
+        roomInfo.mislisinaMemorija.sScore = result;
+        console.log('Mislisina memorija 2 '+result.result,result.numMoves);
+        callHandle();
     });
 };
 
-var handleMudraPcela = (fSocket, sSocket, roomName, nextGame) => {
+var handleMudraPcela = (fSocket, sSocket, roomInfo, nextGame) => {
+    var callHandle = _.after(2,()=>{
+        nextGame(fSocket, sSocket, roomInfo, handleVagalica);
+    });
     var expressions = getExpressions(10);
-    gameIO.to(roomName).emit('expressionsMP', expressions);
+    gameIO.to(roomInfo.name).emit('expressionsMP', expressions);
     fSocket.on('sendPositionMP', (position) => {
-        fSocket.broadcast.to(roomName).emit('positionMP', position);
+        fSocket.broadcast.to(roomInfo.name).emit('positionMP', position);
     });
     sSocket.on('sendPositionMP', (position) => {
-        sSocket.broadcast.to(roomName).emit('positionMP', position);
+        sSocket.broadcast.to(roomInfo.name).emit('positionMP', position);
     });
     fSocket.on('endMP', (result) => {
-        //cuvanje rezultata
-        //Jovanove igre posle ovog :)
-        nextGame(fSocket, sSocket, roomName, handleVagalica);
+        roomInfo.mudraPcela.fScore = result;
+        console.log('Mudra pcela 1'+result.trueAnswers,+result.falseAnswers,+result.time);
+        callHandle();
     });
     sSocket.on('endMP', (result) => {
-        //cuvanje rezultata
+        roomInfo.mudraPcela.sScore = result;
+        console.log('Mudra pcela 2'+result.trueAnswers,+result.falseAnswers,+result.time);
+        callHandle();
     });
 };
 
-//Evo ga tvoj deo
-var handleUdaraPandu = (fSocket, sSocket, roomName, nextGame) => {
+var handleUdaraPandu = (fSocket, sSocket, roomInfo, nextGame) => {
+    var callHandle = _.after(1,()=>{
+        nextGame(fSocket, sSocket, roomInfo);
+    });
     var createdAtF = 0;
     var createdAtS = 0;
     var clickedF = false;
@@ -244,14 +302,20 @@ var handleUdaraPandu = (fSocket, sSocket, roomName, nextGame) => {
     });
     var intervalUP = setInterval(() => {
         if (stepCounter === numOfStep) {
-            gameIO.to(roomName).emit('endUP', { scoreF, scoreS });
+            gameIO.to(roomInfo.name).emit('endUP', { scoreF, scoreS });
             clearInterval(intervalUP);
-            //nextGame(fSocket, sSocket, roomName);
+            console.log('Panda: ',scoreF,scoreS);
+            roomInfo.udariPandu.fScore = scoreF;
+            roomInfo.udariPandu.sScore = scoreS;
+            console.log(JSON.stringify(roomInfo));
+            //Ovde vracam klijentima rezultat igara radi prikazivanja
+            gameIO.to(roomInfo.name).emit('results',roomInfo);
+            //callHandle();
         }
         random = getRandom(lastHole);
         randomTime = getRandomTime();
         lastHole = random;
-        gameIO.to(roomName).emit('randomUP', { random, randomTime });
+        gameIO.to(roomInfo.name).emit('randomUP', { random, randomTime });
         stepCounter++;
 
         if (clickedF && clickedS) {

@@ -9,7 +9,6 @@ var shuffle = (n)=>{
         numbers[i+1] = counter;
         counter++;
     }
-    console.log(numbers);
     for(i=0;i<numOfFields;i++){
         k = Math.floor((Math.random() * numOfFields));
         pom = numbers[i];

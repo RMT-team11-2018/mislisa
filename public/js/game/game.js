@@ -1,6 +1,12 @@
-socket.on('shuffledNumbersMM', function (shuffledNumbers) {
+socket.once('sendNickname',function(){
+    socket.emit('nickname',{
+        nickname
+    });
+    console.log(nickname,' rarara');
+});
+socket.once('shuffledNumbersMM', function (shuffledNumbers) {
     numbers = numbers.concat(shuffledNumbers);
-    socket.on('firstMoveMM', function (i) {
+    socket.once('firstMoveMM', function (i) {
         if (i == 0) {
             numberOfMoves = 2;
         }
@@ -8,7 +14,7 @@ socket.on('shuffledNumbersMM', function (shuffledNumbers) {
     startMislisinaMemorija();
 });
 
-socket.on('expressionsMP', function (exps) {
+socket.once('expressionsMP', function (exps) {
     expressions = expressions.concat(exps);
     startMudraPcela();
 });
@@ -32,4 +38,9 @@ socket.on('biranjeBrojeva', function (biranjeParams) {
 });
 socket.on('prikazPolja',function(poljaZaPrikaz){
     prikazivanjePolja(poljaZaPrikaz);
+});
+
+//Primam rezultat
+socket.once('results',function(results){
+    displayResults(results);
 });
