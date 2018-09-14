@@ -3,6 +3,7 @@
 <head>
     <title> Mislisina memorija </title>
     <meta charset="utf-8">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!--Import css -->
     <link rel="stylesheet" href="css/game.css">
 </head>
@@ -11,7 +12,71 @@
         <p>Čekanje protivnika!</p>
         <img src="img/load.gif" alt="...">
     </div>
+    <div class="container" id="result">
+            <hr>
+            <div class="row  h-25">
+                <div class="col-sm-4">
+                    <p id="fNickname">Prvi igrac</p>
+                </div>
+                <div class="col-sm-4">
+                    <h3>REZULTAT</h3>
+                </div>
+                <div class="col-sm-4">
+                    <p id="sNickname">Drugi igrac</p>
+                </div>
+		    </div>
+            <hr>
+            <div class="row h-50">
+                <div class="col-sm-4 text-center">
+                    <kbd id="fMislisinaMemorija">1</kbd>
+                </div>
+                <div class="col-sm-4">
+                    <img src="/img/17.gif" class="img-responsive res_img" alt="mislisina_memorija">
+                </div>
+                <div class="col-sm-4 text-center">
+                    <kbd id="sMislisinaMemorija">1</kbd>
+                </div>
+		    </div>
+            <hr>
+            <div class="row h-50">
+                <div class="col-sm-4 text-center">
+                    <kbd id="fPametnaPcela">1</kbd>
+                </div>
+                <div class="col-sm-4">
+                    <img src="/img/flw.png" class="img-responsive res_img" id="res_smart_bee" alt="pemetna pcela">
+                </div>
+                <div class="col-sm-4 text-center">
+                    <kbd id="sPametnaPcela">1</kbd>
+                </div>
+		    </div> 
+            <hr>
+            <div class="row h-50">
+                <div class="col-sm-4 text-center">
+                    <kbd id="fUdariPandu">1</kbd>
+                </div>
+                <div class="col-sm-4">
+                    <img src="/img/panda.jpg" class="img-responsive res_img"  alt="udari pandu">
+                </div>
+                <div class="col-sm-4 text-center">
+                    <kbd id="sUdariPandu">1</kbd>
+                </div>
+		    </div>
+            <hr>
+            <div class="row h-50">
+                <div class="col-sm-4 text-center">
+                    <kbd id="fVagalica">1</kbd>
+                </div>
+                <div class="col-sm-4">
+                    <img src="/img/panda.jpg" class="img-responsive res_img" alt="vagalica">
+                </div>
+                <div class="col-sm-4 text-center">
+                    <kbd id="sVagalica">1</kbd>
+                </div>
+		    </div>
+            <hr>
+        </div>
     <script>
+        //Ovde cuvam nadimak igraca
         var nickname = "{{nickname}}";
     </script>
     <script src="js/game/jquery-3.3.1.min.js"></script>

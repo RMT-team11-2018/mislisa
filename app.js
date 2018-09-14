@@ -55,7 +55,7 @@ var sessionChecker = (req, res, next) => {
 app.get('/', sessionChecker, (req, res) => {
     if (req.session.user && req.cookies.user_sid) {
         res.render('index.hbs',{
-            login:true
+            login:true,
         });
     }else{
         res.render('index.hbs',{
@@ -73,7 +73,8 @@ app.get('/', sessionChecker, (req, res) => {
 app.get('/game', (req, res) => {
     if(req.session.user && req.cookies.user_sid) {
         res.render('game.hbs',{
-            login:true
+            login:true,
+            nickname:req.session.user.nadimak
         });
     }
     else{
@@ -204,7 +205,8 @@ var handleGame = (fSocket, sSocket, roomName) => {
         }
     };
     var callHandle = _.after(2,()=>{
-        handleMislisinaMemorija(fSocket,sSocket,roomInfo,handleMudraPcela);
+        //handleMislisinaMemorija(fSocket,sSocket,roomInfo,handleMudraPcela);
+        handleUdaraPandu(fSocket, sSocket, roomInfo);
     });
     //OVO ODKOMENTARISI POSLE GOTOVOG TESTIRNJA!!!
     //A OVO OBRISI
@@ -215,10 +217,12 @@ var handleGame = (fSocket, sSocket, roomName) => {
     gameIO.to(roomName).emit('sendNickname');
     fSocket.once('nickname',(n)=>{
         roomInfo.fNickname = n.nickname;
+        console.log(n.nickname);
         callHandle();
     });
     sSocket.once('nickname',(n)=>{
         roomInfo.sNickname =n.nickname;
+        console.log(n.nickname);
         callHandle();
     });
 };
