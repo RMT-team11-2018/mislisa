@@ -205,8 +205,8 @@ var handleGame = (fSocket, sSocket, roomName) => {
         }
     };
     var callHandle = _.after(2,()=>{
-        //handleMislisinaMemorija(fSocket,sSocket,roomInfo,handleMudraPcela);
-        handleUdaraPandu(fSocket, sSocket, roomInfo);
+        handleMislisinaMemorija(fSocket,sSocket,roomInfo,handleMudraPcela);
+        //handleUdaraPandu(fSocket, sSocket, roomInfo);
     });
     //OVO ODKOMENTARISI POSLE GOTOVOG TESTIRNJA!!!
     //A OVO OBRISI
@@ -313,8 +313,9 @@ var handleUdaraPandu = (fSocket, sSocket, roomInfo, nextGame) => {
             gameIO.to(roomInfo.name).emit('endUP', { scoreF, scoreS });
             clearInterval(intervalUP);
             console.log('Panda: ',scoreF,scoreS);
-            roomInfo.udariPandu.fScore = scoreF;
-            roomInfo.udariPandu.sScore = scoreS;
+            //AJDE MOLIM TE DODAJ VREDNOST OVOME POSTO NE MOGU DA POHVATAM STA TI JE REZULTAT
+            roomInfo.udariPandu.fScore = 0;
+            roomInfo.udariPandu.sScore = 0;
             console.log(JSON.stringify(roomInfo));
             //Ovde vracam klijentima rezultat igara radi prikazivanja
             gameIO.to(roomInfo.name).emit('results',roomInfo);

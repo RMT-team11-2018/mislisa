@@ -55,7 +55,7 @@ p{
 }
 
 #result{
-    display:block;
+    display:none;
     width: 50%;
     padding-left: 10%;
     padding-right: 10%;
@@ -64,6 +64,14 @@ p{
 }
 #res_smart_bee{
     background-color:green;
+}
+kbd{
+    font-size: 18px;
+}
+#fScore,#sScore{
+    padding: 10px 30px;
+    background-color:#024053;
+    font-size:22px;
 }
 .text-center{
     margin-top: 4%;
