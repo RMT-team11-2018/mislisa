@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const socketIO = require('socket.io');
 const user = require('./models/user');
+const game = require('./models/game');
 const _ = require('lodash');
 const { shuffle } = require('./controller/mislisina_memorija');
 const { getExpressions } = require('./controller/mudra_pcela');
@@ -188,21 +189,23 @@ var handleGame = (fSocket, sSocket, roomName) => {
         fNickname : '',
         sNickname : '',
         mislisinaMemorija : {
-            fScore : null,
-            sScore : null
+            fScore : 0,
+            sScore : 0
         },
         mudraPcela : {
-            fScore : null,
-            sScore : null
+            fScore : 0,
+            sScore : 0
         },
         udariPandu : {
-            fScore : null,
-            sScore : null
+            fScore : 0,
+            sScore : 0
         },
         vagalica : {
-            fScore : null,
-            sScore : null
-        }
+            fScore : 0,
+            sScore : 0
+        },
+        fResult:0,
+        sResult:0
     };
     var callHandle = _.after(2,()=>{
         handleMislisinaMemorija(fSocket,sSocket,roomInfo,handleMudraPcela);
@@ -218,12 +221,10 @@ var handleGame = (fSocket, sSocket, roomName) => {
     gameIO.to(roomName).emit('sendNickname');
     fSocket.once('nickname',(n)=>{
         roomInfo.fNickname = n.nickname;
-        console.log(n.nickname);
         callHandle();
     });
     sSocket.once('nickname',(n)=>{
         roomInfo.sNickname =n.nickname;
-        console.log(n.nickname);
         callHandle();
     });
 };
@@ -244,12 +245,10 @@ var handleMislisinaMemorija = (fSocket, sSocket, roomInfo, nextGame) => {
     });
     fSocket.on('endMM', (result) => {
         roomInfo.mislisinaMemorija.fScore = result;
-        console.log('Mislisina memorija 1 '+result.result,result.numMoves);
         callHandle();
     });
     sSocket.on('endMM', (result) => {
         roomInfo.mislisinaMemorija.sScore = result;
-        console.log('Mislisina memorija 2 '+result.result,result.numMoves);
         callHandle();
     });
 };
@@ -268,12 +267,10 @@ var handleMudraPcela = (fSocket, sSocket, roomInfo, nextGame) => {
     });
     fSocket.on('endMP', (result) => {
         roomInfo.mudraPcela.fScore = result;
-        console.log('Mudra pcela 1'+result.trueAnswers,+result.falseAnswers,+result.time);
         callHandle();
     });
     sSocket.on('endMP', (result) => {
         roomInfo.mudraPcela.sScore = result;
-        console.log('Mudra pcela 2'+result.trueAnswers,+result.falseAnswers,+result.time);
         callHandle();
     });
 };
@@ -315,12 +312,8 @@ var handleUdaraPandu = (fSocket, sSocket, roomInfo, nextGame) => {
             setTimeout(()=>{
             gameIO.to(roomInfo.name).emit('endUP', { scoreF, scoreS });
             console.log('Panda: ',scoreF,scoreS);
-            //AJDE MOLIM TE DODAJ VREDNOST OVOME POSTO NE MOGU DA POHVATAM STA TI JE REZULTAT
             roomInfo.udariPandu.fScore = rezF;
             roomInfo.udariPandu.sScore = rezS;
-            console.log(JSON.stringify(roomInfo));
-            //Ovde vracam klijentima rezultat igara radi prikazivanja
-            //gameIO.to(roomInfo.name).emit('results',roomInfo);
             callHandle();
             clearInterval(intervalUP);
             },600);
@@ -394,7 +387,11 @@ var handleVagalica = function (fSocket, sSocket, roomInfo) {
         console.log('Igrac1-20,Igrac2-0')
         roomInfo.vagalica.fScore=20;
         roomInfo.vagalica.sScore=0;
-        gameIO.to(roomInfo.name).emit('results',roomInfo);
+        ////
+        //Ovo nam je metoda u kojoj je logika za kraj igre, slanje klijentima,rad sa bazom itd...
+        handleEndGame(roomInfo);
+        ////
+        //gameIO.to(roomInfo.name).emit('results',roomInfo);
         //callHandle();
     });
     sSocket.on('drugaFazaV', () => {
@@ -402,10 +399,57 @@ var handleVagalica = function (fSocket, sSocket, roomInfo) {
         console.log('Igrac1-0,Igrac2-20');
         roomInfo.vagalica.fScore=0;
         roomInfo.vagalica.sScore=20;
+        ////
+        //Ovo nam je metoda u kojoj je logika za kraj igre, slanje klijentima,rad sa bazom itd...
+        handleEndGame(roomInfo);
+        ////
         gameIO.to(roomInfo.name).emit('results',roomInfo);
         //callHandle();
     });
 
+}
+
+var handleEndGame = (roomInfo)=>{
+    //result,numMoves
+    var fmm = roomInfo.mislisinaMemorija.fScore;
+    var smm = roomInfo.mislisinaMemorija.sScore;
+    //trueAnswers,falseAnswers
+    var fmp = roomInfo.mudraPcela.fScore;
+    var smp = roomInfo.mudraPcela.sScore;
+
+    var fup = roomInfo.udariPandu.fScore;
+    var sup = roomInfo.udariPandu.sScore;
+
+    var fv = roomInfo.vagalica.fScore;
+    var sv = roomInfo.vagalica.sScore;
+
+    roomInfo.mislisinaMemorija.fScore = Math.round(fmm.result*90/fmm.numMoves);
+    roomInfo.mislisinaMemorija.sScore = Math.round(smm.result*90/smm.numMoves);
+    roomInfo.mudraPcela.fScore = fmp.trueAnswers*3-5*fmp.falseAnswers;
+    roomInfo.mudraPcela.sScore = smp.trueAnswers*3-5*smp.falseAnswers;
+    //Ovo su tvoji rezultati...
+    roomInfo.udariPandu.fScore = 0;
+    roomInfo.udariPandu.sScore = 0;
+    roomInfo.vagalica.fScore = 0;
+    roomInfo.vagalica.sScore = 0;
+    //
+    roomInfo.fResult += roomInfo.mislisinaMemorija.fScore+roomInfo.mudraPcela.fScore+roomInfo.udariPandu.fScore+roomInfo.vagalica.fScore;
+    roomInfo.sResult += roomInfo.mislisinaMemorija.sScore+roomInfo.mudraPcela.sScore+roomInfo.udariPandu.sScore+roomInfo.vagalica.sScore;
+
+    console.log(JSON.stringify(roomInfo));
+    gameIO.to(roomInfo.name).emit('results',roomInfo);
+
+    var gameObj = {
+        nadimak1:roomInfo.fNickname,
+        nadimak2:roomInfo.sNickname,
+        rezultat1:roomInfo.fResult,
+        rezultat2:roomInfo.sResult
+    }
+    game.addGame(gameObj,(res)=>{
+        if(!res){
+            console.log('Greska prilikom cuvanja igre');
+        }
+    });
 }
 server.listen(port, () => {
     console.log('Server je pokrenut');

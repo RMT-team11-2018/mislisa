@@ -7,11 +7,10 @@ var addGame = (game,callback)=>{
         connection.query(sqlstring.format('INSERT INTO igre SET ?',game),(error,result,fields)=>{
             connection.release();
             if(error){
-                callback(undefined,error);
-            }else{
-                callback(user);
+                callback(false);
             }
-
         });
     });
 }
+
+module.exports = {addGame}
