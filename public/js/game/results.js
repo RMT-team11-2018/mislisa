@@ -14,6 +14,6 @@ function displayResults(results){
     document.getElementById('sUdariPandu').innerHTML = results.udariPandu.sScore;
     document.getElementById('fVagalica').innerHTML = results.vagalica.fScore;
     document.getElementById('sVagalica').innerHTML = results.vagalica.sScore;
-    document.getElementById('fScore').innerHTML = result.fResult;
-    document.getElementById('sScore').innerHTML = result.sResult;
+    document.getElementById('fScore').innerHTML = results.fResult;
+    document.getElementById('sScore').innerHTML = results.sResult;
 };
