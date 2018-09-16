@@ -15,10 +15,10 @@ function displayResults(results){
     var fup = results.udariPandu.fScore;
     var sup = results.udariPandu.sScore;
 
-    fScore+=fmm.result*90/fmm.numMoves;
-    sScore+=smm.result*90/smm.numMoves;
-    document.getElementById('fMislisinaMemorija').innerHTML = fmm.result*90/fmm.numMoves;
-    document.getElementById('sMislisinaMemorija').innerHTML = smm.result*90/smm.numMoves;
+    fScore+=Math.round(fmm.result*90/fmm.numMoves);
+    sScore+=Math.round(smm.result*90/smm.numMoves);
+    document.getElementById('fMislisinaMemorija').innerHTML = Math.round(fmm.result*90/fmm.numMoves);
+    document.getElementById('sMislisinaMemorija').innerHTML = Math.round(smm.result*90/smm.numMoves);
     fScore+=fmp.trueAnswers*3-5*fmp.falseAnswers;
     sScore+=smp.trueAnswers*3-5*smp.falseAnswers;
     document.getElementById('fMudraPcela').innerHTML = fmp.trueAnswers*3-5*fmp.falseAnswers;
