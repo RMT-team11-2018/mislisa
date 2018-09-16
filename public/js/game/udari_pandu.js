@@ -26,7 +26,7 @@ function startUdariPandu(randomP) {
         game.innerHTML = content;
 
     }
-    if(countPanda<20)
+    if(countPanda<19)
         panding();
 }
 

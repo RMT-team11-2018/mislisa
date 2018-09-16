@@ -206,7 +206,8 @@ var handleGame = (fSocket, sSocket, roomName) => {
     };
     var callHandle = _.after(2,()=>{
         handleMislisinaMemorija(fSocket,sSocket,roomInfo,handleMudraPcela);
-        //handleUdaraPandu(fSocket, sSocket, roomInfo);
+        //handleUdaraPandu(fSocket,sSocket,roomInfo,handleVagalica);
+        
     });
     //OVO ODKOMENTARISI POSLE GOTOVOG TESTIRNJA!!!
     //A OVO OBRISI
@@ -279,6 +280,7 @@ var handleMudraPcela = (fSocket, sSocket, roomInfo, nextGame) => {
 
 var handleUdaraPandu = (fSocket, sSocket, roomInfo, nextGame) => {
     var callHandle = _.after(1,()=>{
+        console.log('udje u callHandluPanda za poziv vagalice');
         nextGame(fSocket, sSocket, roomInfo);
     });
     var createdAtF = 0;
@@ -292,10 +294,10 @@ var handleUdaraPandu = (fSocket, sSocket, roomInfo, nextGame) => {
     var random = getRandom(lastHole);
     var randomTime = getRandomTime();
     var stepCounter = 0;
-
+    var rezF=0;
+    var rezS=0;
     var resultsF = new Array(20);
     var resultsS = new Array(20);
-    var rezultatIgre = {};
 
 
     fSocket.on('pandaUP', (stepClient) => {
@@ -310,30 +312,31 @@ var handleUdaraPandu = (fSocket, sSocket, roomInfo, nextGame) => {
     });
     var intervalUP = setInterval(() => {
         if (stepCounter === numOfStep) {
+            setTimeout(()=>{
             gameIO.to(roomInfo.name).emit('endUP', { scoreF, scoreS });
-            clearInterval(intervalUP);
             console.log('Panda: ',scoreF,scoreS);
             //AJDE MOLIM TE DODAJ VREDNOST OVOME POSTO NE MOGU DA POHVATAM STA TI JE REZULTAT
-            roomInfo.udariPandu.fScore = 0;
-            roomInfo.udariPandu.sScore = 0;
+            roomInfo.udariPandu.fScore = rezF;
+            roomInfo.udariPandu.sScore = rezS;
             console.log(JSON.stringify(roomInfo));
             //Ovde vracam klijentima rezultat igara radi prikazivanja
-            gameIO.to(roomInfo.name).emit('results',roomInfo);
-            //callHandle();
-        }
+            //gameIO.to(roomInfo.name).emit('results',roomInfo);
+            callHandle();
+            clearInterval(intervalUP);
+            },600);
+            
+        }else{
         random = getRandom(lastHole);
         randomTime = getRandomTime();
         lastHole = random;
         gameIO.to(roomInfo.name).emit('randomUP', { random, randomTime });
         stepCounter++;
-
+        }
 
     }, randomTime + 600);
 };
 //racunanje rezultata iz handleUdaraPandu
 function izracunajRezultat(resF, resS) {
-    rezF = 0;
-    rezS = 0;
     for (var i = 0; i < 20; i++) {
 
         if (typeof resF[i] != "undefined" && typeof resS[i] != "undefined") {
@@ -353,48 +356,55 @@ function izracunajRezultat(resF, resS) {
             rezS++;
         }
     }
-    return { rezF, rezS };
+
 };
 
 
-var handleVagalica = function (fSocket, sSocket, roomName) {
-    var odabranaPolja = new Array(15);
-    var izabranoPolje = 0;
-    odabranaPolja.forEach(polje => {
-        polje = 0;
+var handleVagalica = function (fSocket, sSocket, roomInfo) {
+    var callHandle = _.after(1,()=>{
+        //nextGame(fSocket, sSocket, roomInfo);
     });
-    console.log('presla je na vagalicu');
-    var vagCount = 1;
-    var intervalVagalica = setInterval(() => {
-        if (vagCount == 15) {
-            clearInterval(intervalVagalica);
-        }
-        var randomVagNumber = getRandomVagalica(vagCount);
-        gameIO.to(roomName).emit('punjenjeKase', { randomVagNumber, vagCount });
-        vagCount++;
+    var randomVagNumbers = getRandomVagalica();
+    console.log("udje u handle vagalicu");
+    gameIO.to(roomInfo.name).emit('punjenjeKase',randomVagNumbers);
+    fSocket.emit('firstMoveV', 1);
+    sSocket.emit('firstMoveV', 0);
 
-    }, 800);
-    fSocket.on('odabranoPolje', (brPolja) => {
-        odabranaPolja[brPolja - 1] = 1;
-        izabranoPolje = brPolja;
+    fSocket.on('posaljiIDPoljaV', (i,brPoteza) => {
+        fSocket.broadcast.to(roomInfo.name).emit('otvorenoPoljeID', i,brPoteza++);
     });
-    sSocket.on('odabranoPolje', (brPolja) => {
-        odabranaPolja[brPolja - 1] = 1;
-        izabranoPolje = brPolja;
+    sSocket.on('posaljiIDPoljaV', (i,brPoteza) => {
+        sSocket.broadcast.to(roomInfo.name).emit('otvorenoPoljeID', i,brPoteza++);
+    });
+    fSocket.on('poljeKorpeOtvoreno', (i,brPoteza,trenutniRezultat) => {
+        fSocket.broadcast.to(roomInfo.name).emit('otvorenoPoljeKorpeID', i,brPoteza++,trenutniRezultat);
+    });
+    sSocket.on('poljeKorpeOtvoreno', (i,brPoteza,trenutniRezultat) => {
+        sSocket.broadcast.to(roomInfo.name).emit('otvorenoPoljeKorpeID', i,brPoteza++,trenutniRezultat);
     });
 
-    for (var i = 1; i < 11; i++) {
-        if (i % 2 !== 0) {
-            console.log('treba da emituje fsoket');
-            fSocket.emit('biranjeBrojeva', { i, odabranaPolja });
-        } else {
-            sSocket.emit('biranjeBrojeva', { i, odabranaPolja });
-        }
-        if (izabranoPolje !== 0) {
-            console.log('sada svima emituje sta je odabrano');
-            gameIO.to(roomName).emit('prikazPolja', { i, odabranaPolja, izabranoPolje });
-        }
-    }
+    fSocket.on('drugaFazaV', () => {
+        gameIO.to(roomInfo.name).emit('novaFaza',Math.round(Math.random() * (120 - 80) + 80));
+    });
+    sSocket.on('drugaFazaV', () => {
+        gameIO.to(roomInfo.name).emit('novaFaza',Math.round(Math.random() * (120 - 80) + 80));
+    });
+    fSocket.on('krajVagalice', () => {
+        gameIO.to(roomInfo.name).emit('krajIgrice');
+        console.log('Igrac1-20,Igrac2-0')
+        roomInfo.vagalica.fScore=20;
+        roomInfo.vagalica.sScore=0;
+        gameIO.to(roomInfo.name).emit('results',roomInfo);
+        //callHandle();
+    });
+    sSocket.on('drugaFazaV', () => {
+        gameIO.to(roomInfo.name).emit('krajIgrice');
+        console.log('Igrac1-0,Igrac2-20');
+        roomInfo.vagalica.fScore=0;
+        roomInfo.vagalica.sScore=20;
+        gameIO.to(roomInfo.name).emit('results',roomInfo);
+        //callHandle();
+    });
 
 }
 server.listen(port, () => {
