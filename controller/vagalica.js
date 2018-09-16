@@ -1,12 +1,16 @@
-var getRandomVagalica = (vagCount)=>{
-    if(vagCount<4){
-    return Math.floor(Math.round(Math.random()*((vagCount+2)*4 - 7) + 2));
-    }
-    else if(vagCount>=4&&vagCount<10){
-        return Math.floor(Math.round(Math.random()*((vagCount+1)*5 - 6) + 3));
-    }
-    else{
-        return Math.floor(Math.round(Math.random()*vagCount*2+6));
-    }
+var getRandomVagalica = () => {
+    var numbers = new Array(15);
+    for (var i = 0; i < 15; i++) {
+        if (i < 2) {
+            numbers[i]=Math.round(Math.random() * (7 - 3) + 3);
+        }
+        else if (i >= 2 && i < 5) {
+            numbers[i]=Math.round(Math.random() * (23 - 9) + 9);
+        }
+        else {
+            numbers[i]=Math.round(Math.random() * (45 - 18) + 18);
+        }
+        
+    }return numbers;
 }
-module.exports={getRandomVagalica};
+module.exports = { getRandomVagalica };

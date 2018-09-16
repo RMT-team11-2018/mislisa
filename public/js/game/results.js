@@ -14,6 +14,8 @@ function displayResults(results){
     var smp = results.mudraPcela.sScore;
     var fup = results.udariPandu.fScore;
     var sup = results.udariPandu.sScore;
+    //var fmv=results.vagalica.fScore;
+    //var svm=results.vagalica.sScore;
 
     fScore+=Math.round(fmm.result*90/fmm.numMoves);
     sScore+=Math.round(smm.result*90/smm.numMoves);
