@@ -1,9 +1,3 @@
-const http = require('http');
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
 const socketIO = require('socket.io');
 const user = require('./models/user');
 const game = require('./models/game');
@@ -14,65 +8,38 @@ const { getRandom } = require('./controller/udari_pandu');
 const { getRandomTime } = require('./controller/udari_pandu');
 const { getRandomVagalica } = require('./controller/vagalica');
 
-var publicPath = path.join(__dirname, 'public');
-var port = process.env.PORT || 3000;
+var gameIO = null;
 
-//setovanje aplikacije
-var app = express();
-var server = http.createServer(app);
-app.set('view engine', 'hbs');
-
-app.use(express.static(publicPath));
-app.use(bodyParser());
-app.use(cookieParser());
-app.use(session({
-    key: 'user_sid',
-    secret: 'mislisa',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        expires: 300000000
-    }
-}));
-app.use((req, res, next) => {
-    if (req.cookies.user_sid && !req.session.user) {
-        res.clearCookie('user_sid');
-    }
-    next();
-});
-//Celo rutiranje se nalazi u routes.js fajlu
-require('./routes')(app);
-//Cela socket logika se nalazi u sockets.js fajlu
-//require('./sockets')(server);
-
-var io = socketIO(server);
-var gameIO = io.of('/game');
-var numberOfPlayers = 0;
-var waitSocket;
-gameIO.on('connection', (socket) => {
-    setTimeout(()=>{
-        numberOfPlayers++;
-        if (numberOfPlayers % 2 == 1) {
-            waitSocket = socket;
-        }
-        else if(waitSocket==null && numberOfPlayers!=0){
-            waitSocket = socket;
+module.exports = (server)=>{
+    var io = socketIO(server);
+    gameIO = io.of('/game');
+    var numberOfPlayers = 0;
+    var waitSocket;
+    gameIO.on('connection', (socket) => {
+        setTimeout(()=>{
             numberOfPlayers++;
-        }
-        else {
-            var roomName = `${numberOfPlayers / 2}`;
-            waitSocket.join(roomName);
-            socket.join(roomName);
-            handleGame(waitSocket, socket, roomName);
-        }
-        socket.on('disconnect', () => {
-            if (waitSocket != null && socket.id == waitSocket.id) {
-                numberOfPlayers--;
-                waitSocket = null;
+            if (numberOfPlayers % 2 == 1) {
+                waitSocket = socket;
             }
-        });
-    },1000);
-});
+            else if(waitSocket==null){
+                waitSocket = socket;
+                numberOfPlayers++;
+            }
+            else {
+                var roomName = `${numberOfPlayers / 2}`;
+                waitSocket.join(roomName);
+                socket.join(roomName);
+                handleGame(waitSocket, socket, roomName);
+            }
+            socket.on('disconnect', () => {
+                if (waitSocket != null && socket.id == waitSocket.id) {
+                    numberOfPlayers--;
+                    waitSocket = null;
+                }
+            });
+        },1000);
+    });
+}
 
 var handleGame = (fSocket, sSocket, roomName) => {
     var roomInfo = {
@@ -318,14 +285,11 @@ var handleEndGame = (roomInfo) => {
         rezultat1: roomInfo.fResult,
         rezultat2: roomInfo.sResult
     }
+    if(gameObj.rezultat1==null || gameObj.rezultat2==null)
+        return;
     game.addGame(gameObj, (res) => {
         if (!res) {
             console.log('Greska prilikom cuvanja igre');
         }
     });
 }
-server.listen(port, () => {
-    console.log('Server je pokrenut');
-});
-
-

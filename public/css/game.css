@@ -14,7 +14,7 @@ body{
     margin: auto;
     margin-top: 50px;
     width: 1200px;
-    height: 1200px;
+    height: 700px;
     height: 100vh;
 }
 #canvas{
@@ -23,7 +23,7 @@ body{
     /*background-image: url('grass.jpg');*/
 }
 .row{
-    height: 187.5px;
+    height: 175px;
     margin: 0;
     padding: 0;
 }
@@ -42,8 +42,8 @@ p{
     border-color: orange;
     border-width: 0.1px;
     display: inline-block;
-    width: 250px;
-    height: 187.5px;
+    width: 300px;
+    height: 175px;
     text-align: center;
     font-size: 90px;
     padding: 0;
@@ -53,9 +53,15 @@ p{
 .res_img{
     height: 75px;
 }
-
+#wait_p{
+    color: white;
+    font-size: 35px;
+}
+#wait_gif{
+    border:white 5px;
+}
 #result{
-    display:block;
+    display:none;
     width: 50%;
     padding-left: 10%;
     padding-right: 10%;
@@ -84,6 +90,9 @@ kbd{
     border-radius: 10px;
     text-decoration: none;
     margin:5px 0px;
+}
+#home_btn:hover{
+    font-size: 23px;
 }
 /*end css for result*/
 .text-center{
