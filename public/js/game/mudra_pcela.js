@@ -123,7 +123,7 @@ function startMudraPcela(){
 
 function draw_anim() { 
     ctx.clearRect(0,60,1000,700);
-    if(numOfFlwRow==2){
+    if(numOfFlwRow==8){
         socket.emit('endMP',{trueAnswers,falseAnswers,time});
         draw_end_score();
         clearInterval(interval);
