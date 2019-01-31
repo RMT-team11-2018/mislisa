@@ -1,6 +1,7 @@
 var reg = document.getElementById('registration_window');
 var des = document.getElementById('description_window');
 var search = document.getElementById('search_window');
+var instruction = document.getElementById('instruction_window');
 
 var reg_btn = document.getElementById("reg_btn");
 var des_btn = document.getElementById("des_btn");
@@ -8,10 +9,13 @@ var game_btn = document.getElementById("game_btn");
 var logout_btn = document.getElementById("logout_btn");
 var profile_btn = document.getElementById('profile_btn');
 var search_btn = document.getElementById('search_btn');
+var instruction_btn = document.getElementById('instruction_btn');
 //ovde voditi racuna o redosledu u html dokumentu
 var reg_span = document.getElementsByClassName("close")[0];
 var des_span = document.getElementsByClassName("close")[1];
 var search_span = document.getElementsByClassName("close")[2];
+var instruction_span = document.getElementsByClassName("close")[3];
+
 if(game_btn){
     game_btn.onclick = function () {
         location.href = "/game";
@@ -30,6 +34,11 @@ if(profile_btn){
 if(search_btn){
     search_btn.onclick = function(){
         search.style.display = "block";
+    }
+}
+if(instruction_btn){
+    instruction_btn.onclick = function(){
+        instruction.style.display = "block";
     }
 }
 if(reg_btn){
@@ -53,7 +62,9 @@ des_span.onclick = function(){
 search_span.onclick = function(){
     search.style.display = "none";
 }
-
+instruction_span.onclick = function(){
+    instruction.style.display = "none";
+}
 window.onclick = function(event) {
     if (event.target == reg) {
         reg.style.display = "none";

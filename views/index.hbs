@@ -29,7 +29,7 @@
                 <button id="game_btn" class="button_menu">Igraj</button><br>
                 <button id="profile_btn" class="button_menu">Moj profil</button><br>
                 <button id="search_btn" class="button_menu">Nadji igrača</button><br>
-                <button class="button_menu">Uputstvo</button><br>
+                <button id="instruction_btn"class="button_menu">Uputstvo</button><br>
                 <button id="logout_btn" class="button_menu">Odjavi me</button><br>
                 {{/if}}
                 {{#unless login}}
@@ -66,8 +66,7 @@
         <div class="modal-content">
           <span class="close">&times;</span>
           <h1 class="title">O projektu</h1>
-          <p id="description">Projektni rad<br>ITEH 2019<br>Katedra za elektronsko poslovanje<br>Studenti:<br>Miro Maric 1031/16<br>Jovan Lazic 1036/16<br>Stefan Lezaic<img id="fon_logo" src="img/fon.png"></p>
-
+          <p id="description">Projektni rad<br>ITEH 2019<br>Katedra za elektronsko poslovanje<br>Studenti:<br>Miro Marić 1031/16<br>Jovan Lazić 1036/16<br>Stefan Ležaić 1061/17<img id="fon_logo" src="img/fon.png"></p>
         </div>
       </div>
 
@@ -83,6 +82,15 @@
 
         </div>
       </div>
+
+        <div id="instruction_window" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h1 class="title">Uputstvo</h1>
+                <p id="description">Detaljno uputsvo za svaku igru nalazi se u dokumentaciji projekta.</p>
+                <p id="description">{{temp}}</p>
+            </div>
+        </div>
 
       <script type="text/javascript" src="/js/index.js"></script>
       <script type="text/javascript" src="/js/validation.js"></script>
