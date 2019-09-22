@@ -1,5 +1,4 @@
 const user = require('./models/user');
-const {temp} = require('./controller/temperature')
 var sessionChecker = (req, res, next) => {
     if (!req.session.user || !req.cookies.user_sid) {
         res.render('index.hbs', {
@@ -13,13 +12,9 @@ var sessionChecker = (req, res, next) => {
 module.exports = (app)=>{
     app.get('/', sessionChecker, (req, res) => {
         if (req.session.user && req.cookies.user_sid) {
-            temp((t)=>{
-                res.render('index.hbs',{
-                    login:true,
-                    temp:t
-                });
+            res.render('index.hbs',{
+                login:true
             });
-            
         }else{
             res.render('index.hbs',{
                 login:false
@@ -106,11 +101,8 @@ module.exports = (app)=>{
         user.findUserByNicknameAndPassword(req.body.nickname, req.body.password, (user) => {
             if (user) {
                 req.session.user = user;
-                temp((t)=>{
-                    res.render('index.hbs', {
-                        login: true,
-                        temp:t
-                    });
+                res.render('index.hbs', {
+                    login: true
                 });
             } else {
                 res.render('index.hbs', {
